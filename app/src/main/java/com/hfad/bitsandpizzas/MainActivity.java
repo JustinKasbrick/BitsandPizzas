@@ -47,6 +47,17 @@ public class MainActivity extends Activity {
         ft.addToBackStack(null);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.commit();
+        setActionBarTitle(position);
+    }
+
+    private void setActionBarTitle(int position) {
+        String title;
+        if(position == 0) {
+            title = getResources().getString(R.string.app_name);
+        } else {
+            title = titles[position];
+        }
+        getActionBar().setTitle(title);
     }
 
     protected void onCreate(Bundle savedInstanceState) {
