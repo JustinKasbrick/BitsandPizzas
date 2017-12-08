@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.widget.DrawerLayout;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +19,7 @@ public class MainActivity extends Activity {
     private ShareActionProvider shareActionProvider;
     private String[] titles;
     private ListView drawerList;
+    private DrawerLayout drawerLayout;
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
 
@@ -48,6 +50,7 @@ public class MainActivity extends Activity {
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.commit();
         setActionBarTitle(position);
+        drawerLayout.closeDrawer(drawerList);
     }
 
     private void setActionBarTitle(int position) {
@@ -65,9 +68,12 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         titles = getResources().getStringArray(R.array.titles);
         drawerList = findViewById(R.id.drawer);
+        drawerLayout = findViewById(R.id.drawer_layout);
         drawerList.setAdapter(new ArrayAdapter(this,
                 android.R.layout.simple_list_item_activated_1, titles));
         drawerList.setOnItemClickListener(new DrawerItemClickListener());
+        if(savedInstanceState == null)
+            selectItem(0);
     }
 
     @Override
