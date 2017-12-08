@@ -17,4 +17,9 @@
         <item>Cambridge</item>
         <item>Sebastopol</item>
     </string-array>
+    <string-array name="titles">
+        <item>Pizzas</item>
+        <item>Pasta</item>
+        <item>Stores</item>
+    </string-array>
 </resources>
