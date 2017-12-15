@@ -2,6 +2,7 @@ package com.hfad.bitsandpizzas;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -23,6 +24,7 @@ public class MainActivity extends Activity {
     private ListView drawerList;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle drawerToggle;
+    private int currentPosition = 0;
 
     private class DrawerItemClickListener implements ListView.OnItemClickListener {
 
@@ -33,6 +35,7 @@ public class MainActivity extends Activity {
     }
 
     private void selectItem(int position) {
+        currentPosition = position;
         Fragment fragment;
         switch (position) {
             case 1:
@@ -48,7 +51,7 @@ public class MainActivity extends Activity {
                 fragment = new TopFragment();
         }
         FragmentTransaction ft = getFragmentManager().beginTransaction();
-        ft.replace(R.id.content_frame, fragment);
+        ft.replace(R.id.content_frame, fragment, "visible_fragment");
         ft.addToBackStack(null);
         ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
         ft.commit();
@@ -66,6 +69,12 @@ public class MainActivity extends Activity {
         getActionBar().setTitle(title);
     }
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt("position", currentPosition);
+    }
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
@@ -75,6 +84,13 @@ public class MainActivity extends Activity {
         drawerList.setAdapter(new ArrayAdapter(this,
                 android.R.layout.simple_list_item_activated_1, titles));
         drawerList.setOnItemClickListener(new DrawerItemClickListener());
+
+        // Display the correct fragment
+        if(savedInstanceState != null) {
+            currentPosition = savedInstanceState.getInt("position");
+            setActionBarTitle(currentPosition);
+        } else
+            selectItem(0);
 
         // Create the ActionBarToggle
         drawerToggle = new ActionBarDrawerToggle(this,
@@ -92,12 +108,30 @@ public class MainActivity extends Activity {
         };
         drawerLayout.setDrawerListener(drawerToggle);
 
-        if(savedInstanceState == null)
-            selectItem(0);
-
         //Enable the Up icon so it can be used by the ActionBarDrawerToggle
         getActionBar().setDisplayHomeAsUpEnabled(true);
         getActionBar().setHomeButtonEnabled(true);
+
+        getFragmentManager().addOnBackStackChangedListener(
+                new FragmentManager.OnBackStackChangedListener() {
+                    @Override
+                    public void onBackStackChanged() {
+                        FragmentManager fragMan = getFragmentManager();
+                        Fragment fragment = fragMan.findFragmentByTag("visible_fragment");
+                        if(fragment instanceof TopFragment)
+                            currentPosition = 0;
+                        if(fragment instanceof PizzaFragment)
+                            currentPosition = 1;
+                        if(fragment instanceof PastaFragment)
+                            currentPosition = 2;
+                        if(fragment instanceof StoresFragment)
+                            currentPosition = 3;
+
+                        setActionBarTitle(currentPosition);
+                        drawerList.setItemChecked(currentPosition,true);
+                    }
+                }
+        );
     }
 
     @Override
