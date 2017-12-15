@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -74,8 +75,7 @@ public class MainActivity extends Activity {
         drawerList.setAdapter(new ArrayAdapter(this,
                 android.R.layout.simple_list_item_activated_1, titles));
         drawerList.setOnItemClickListener(new DrawerItemClickListener());
-        if(savedInstanceState == null)
-            selectItem(0);
+
         // Create the ActionBarToggle
         drawerToggle = new ActionBarDrawerToggle(this,
                 drawerLayout, R.string.open_drawer, R.string.close_drawer) {
@@ -91,6 +91,25 @@ public class MainActivity extends Activity {
             }
         };
         drawerLayout.setDrawerListener(drawerToggle);
+
+        if(savedInstanceState == null)
+            selectItem(0);
+
+        //Enable the Up icon so it can be used by the ActionBarDrawerToggle
+        getActionBar().setDisplayHomeAsUpEnabled(true);
+        getActionBar().setHomeButtonEnabled(true);
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        drawerToggle.syncState();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration config) {
+        super.onConfigurationChanged(config);
+        drawerToggle.onConfigurationChanged(config);
     }
 
     // Called whenever we call invalidateOptionsMenu()
@@ -121,6 +140,9 @@ public class MainActivity extends Activity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
+        if(drawerToggle.onOptionsItemSelected(item))
+            return true;
+
         switch (item.getItemId()) {
             case R.id.action_create_order:
                 Intent intent = new Intent(this, OrderActivity.class);
