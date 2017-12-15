@@ -20,6 +20,7 @@
         <item>Sebastopol</item>
     </string-array>
     <string-array name="titles">
+        <item>Home</item>
         <item>Pizzas</item>
         <item>Pasta</item>
         <item>Stores</item>
